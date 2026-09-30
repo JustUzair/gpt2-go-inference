@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Go
+*.exe
+*.test
+*.out
+
+# uv / Python
+.venv/
+__pycache__/
+*.pyc
