@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"math"
 )
 
 func AddVectors(a, b Tensor) Tensor {
@@ -55,4 +56,40 @@ func Transpose(a Tensor, rows, cols int) Tensor {
 		}
 	}
 	return result
+}
+
+// Softmax: turn a list of raw scores into probabilities (all between 0 and 1,
+// adding up to 1). Bigger score = bigger share.
+// 1. find the biggest value (max)
+// 2. for each value, compute exp(value - max)
+// 3. add those up
+// 4. divide each one by the total
+func SoftMax(input Tensor) Tensor {
+	n := len(input)
+	if n == 0 {
+		panic("Softmax: empty input")
+	}
+	// step 1: biggest value
+	max := input[0]
+	for _, v := range input[1:] {
+		if v > max {
+			max = v
+		}
+	}
+
+	// step 2 and 3: exp(x - max), and the running total
+	output := make(Tensor, n)
+	var sum float64
+	for i, v := range input {
+		e := math.Exp(float64(v - max))
+		output[i] = float32(e)
+		sum += e
+	}
+
+	// step 4: divide by the total so everything adds up to 1
+	for i := range output {
+		output[i] /= float32(sum)
+
+	}
+	return output
 }
